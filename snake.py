@@ -29,7 +29,9 @@ class Snake:
         self.body.append(tuple(map(operator.add, self.head, self.direction)))
 
     def set_direction(self, direction):
-        self.direction = direction
+        if (directions != self.direction and
+            directions != tuple(map(operator.mul(self.directions, (-1, -1)))):
+            self.direction = direction
 
     def is_eating(self):
         "stub"
@@ -71,27 +73,44 @@ class Food:
         self.y = random.randint(0, 30)
 
 
-class Display:
+class SnakeGame:
+    '''
+    This is the game class that runs the snake game
+    '''
     coordinate = [100, 200]
     def __init__(self):
         self.frame = Tk()
         self.canvas = Canvas(self.frame, width=800, height=600, bg="#545454")
         self.canvas.pack()
-        self.mySnake = Snake()
+        self.my_sake = Snake()
         self.food = Food()
         self.frame.bind("<KeyPress>", self.key_pressed)
 
+    # Set directions for the snake
     def key_pressed(self, event):
         if event.keysym == "Up" or event.keysym == "w":
+                self.my_sake.set_direction(Snake.Directions.UP)
         elif event.keysym == "Down" or event.keysym == "s":
+                self.my_sake.set_direction(Snake.Directions.DOWN)
         elif event.keysym == "Left" or event.keysym == "a":
+                self.my_sake.set_direction(Snake.Directions.LEFT)
         elif event.keysym == "Right" or event.keysym == "d":
+                self.my_sake.set_direction(Snake.Directions.RIGHT)
 
     def run(self):
         self.canvas.delete(ALL)
-        self.frame.after(10, self.run)
+        self.update()
+        self.render(self.canvas)
+        self.frame.after(20, self.run())
+
+    def update(self):
+        self.my_sake.update()
+
+    def render(self, canvas):
+        self.my_snake.render(canvas)
+        self.food.render(canvas)
 
 if __name__ == "__main__":
-    game = Display()
-    game.run()
-    game.frame.mainloop()
+    my_game = SnakeGame()
+    my_game.run()
+    my_game.frame.mainloop()
