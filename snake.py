@@ -20,12 +20,16 @@ class GameStatus:
 class Handler:
     def __init__(self, game):
         self.game = game
+
     def get_game(self):
         return self.game
+
     def get_snake(self):
         return self.game.snake
+
     def get_food(self):
         return self.game.food
+
     def get_player(self):
         return "stub"
 
@@ -41,7 +45,7 @@ class Snake:
 
     def step(self):
         self.head = self.body[-1]
-        self.body.append(np.array(self.head) + np.array(self.direction))
+        self.body.append(tuple(np.array(self.head) + np.array(self.direction)))
         del self.body[0]
         self.tail = self.body[0]
         print(self.head)
@@ -51,16 +55,11 @@ class Snake:
             direction != tuple(np.array(self.direction) * np.array((-1, -1)))):
             self.direction = direction
 
-    def is_eating(self):
-        return "stub"
-
     def grow(self):
         self.body.insert(0, copy.deepcopy(self.tail))
 
     def update(self):
         self.step()
-        if self.is_eating():
-            self.grow()
 
     def render(self, canvas):
         assert isinstance(canvas, Canvas)
@@ -88,8 +87,8 @@ class Food:
                            fill="#8e2af9", outline="#5400af", width=3)
 
     def generate_food(self):
-        self.x = random.randint(0, 40)
-        self.y = random.randint(0, 30)
+        self.x = random.randint(0, 39)
+        self.y = random.randint(0, 29)
 
 
 class SnakeGame:
@@ -102,6 +101,7 @@ class SnakeGame:
         self.canvas.pack()
         self.my_snake = Snake()
         self.food = Food()
+        self.food_coor = (self.food.x, self.food.y)
         self.frame.bind("<KeyPress>", self.print_key_info)
 
     # Set directions for the snake
@@ -124,12 +124,16 @@ class SnakeGame:
     def update(self):
         self.my_snake.update()
 
+        if self.my_snake.head == self.food_coor:
+            self.my_snake.grow()
+            self.food.generate_food()
+            self.food_coor = (self.food.x, self.food.y)
+
     def render(self):
         self.my_snake.render(self.canvas)
         self.food.render(self.canvas)
 
 if __name__ == "__main__":
     my_game = SnakeGame()
-    handler = Handler(my_game)
     my_game.run()
     my_game.frame.mainloop()
