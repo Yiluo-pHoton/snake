@@ -5,8 +5,8 @@ import random
 import numpy as np
 
 class Directions:
-    UP = (0, 1)
-    DOWN = (0, -1)
+    UP = (0, -1)
+    DOWN = (0, 1)
     LEFT = (-1, 0)
     RIGHT = (1, 0)
 
@@ -30,6 +30,7 @@ class Snake:
         self.body.append(np.array(self.head) + np.array(self.direction))
         del self.body[0]
         self.tail = self.body[0]
+        print(self.head)
 
     def set_direction(self, direction):
         if (direction != self.direction and
@@ -48,9 +49,9 @@ class Snake:
     def render(self, canvas):
         assert isinstance(canvas, Canvas)
         for seg in self.body:
-            canvas.create_oval(seg[0] * 20, seg[1] * 20,
-                               seg[0] * 20 + 20,
-                               seg[1] * 20 + 20, fill = "#33FFAA")
+            canvas.create_oval(seg[0]*20, seg[1]*20,
+                               seg[0]*20+20, seg[1]*20+20,
+                               fill="#14b4ff", width=0)
 
     def is_game_over(self):
         return "stub"
@@ -66,9 +67,9 @@ class Food:
 
     def render(self, canvas):
         assert isinstance(canvas, Canvas)
-        canvas.create_oval(self.x * 20, self.y * 20,
-                           self.x * 20 + 20,
-                           self.y * 20 + 20, fill = "#ee00ff")
+        canvas.create_oval(self.x*20, self.y*20,
+                           self.x*20+20,self.y*20+20,
+                           fill="#8e2af9", outline="#5400af", width=3)
 
     def generate_food(self):
         self.x = random.randint(0, 40)
@@ -101,7 +102,8 @@ class SnakeGame:
     def run(self):
         self.canvas.delete(ALL)
         self.render()
-        self.frame.after(20, self.run)
+        self.update()
+        self.frame.after(100, self.run)
 
     def update(self):
         self.my_snake.update()
