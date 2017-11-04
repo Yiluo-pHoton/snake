@@ -16,6 +16,20 @@ class GameStatus:
     ONGOING = 1
     GAME_OVER = 2
 
+
+class Handler:
+    def __init__(self, game):
+        self.game = game
+    def get_game(self):
+        return self.game
+    def get_snake(self):
+        return self.game.snake
+    def get_food(self):
+        return self.game.food
+    def get_player(self):
+        return "stub"
+
+
 class Snake:
     '''
     This is the Snake object for player to control
@@ -45,6 +59,8 @@ class Snake:
 
     def update(self):
         self.step()
+        if self.is_eating():
+            self.grow()
 
     def render(self, canvas):
         assert isinstance(canvas, Canvas)
@@ -82,7 +98,7 @@ class SnakeGame:
     '''
     def __init__(self):
         self.frame = Tk()
-        self.canvas = Canvas(self.frame, width=800, height=600, bg="#545454")
+        self.canvas = Canvas(self.frame, width=800, height=600, bg="#000")
         self.canvas.pack()
         self.my_snake = Snake()
         self.food = Food()
@@ -101,8 +117,8 @@ class SnakeGame:
 
     def run(self):
         self.canvas.delete(ALL)
-        self.render()
         self.update()
+        self.render()
         self.frame.after(100, self.run)
 
     def update(self):
@@ -114,5 +130,6 @@ class SnakeGame:
 
 if __name__ == "__main__":
     my_game = SnakeGame()
+    handler = Handler(my_game)
     my_game.run()
     my_game.frame.mainloop()
