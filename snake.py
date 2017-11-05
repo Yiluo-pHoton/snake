@@ -38,10 +38,11 @@ class Snake:
     '''
     This is the Snake object for player to control
     '''
-    def __init__(self):
+    def __init__(self, handler):
         self.body = [(0, 0), (1, 0), (2, 0)]
         self.tail = self.body[0]
         self.direction = Directions.RIGHT
+        self.handler = handler
 
     def step(self):
         self.head = self.body[-1]
@@ -61,6 +62,11 @@ class Snake:
     def update(self):
         self.step()
 
+        self.food = self.handler.get_food()
+        self.food_coor = (self.food.x, self.food.y)
+        if self.head == self.food.coor:
+            self.grow()
+
     def render(self, canvas):
         assert isinstance(canvas, Canvas)
         for seg in self.body:
@@ -76,9 +82,18 @@ class Food:
     '''
     This is a class for randomly generated food in the game
     '''
-    def __init__(self):
+    def __init__(self, handler):
         self.x = random.randint(0, 40)
         self.y = random.randint(0, 30)
+        self.handler = handler
+
+    def update(self):
+        self.snake = self.handler.get_snake()
+        self.snake_head = self.snake.head
+        self.coor = (self.x, self.y)
+
+        if self.snake.head == self.coor:
+            self.generate_food()
 
     def render(self, canvas):
         assert isinstance(canvas, Canvas)
@@ -99,9 +114,9 @@ class SnakeGame:
         self.frame = Tk()
         self.canvas = Canvas(self.frame, width=800, height=600, bg="#000")
         self.canvas.pack()
-        self.my_snake = Snake()
-        self.food = Food()
-        self.food_coor = (self.food.x, self.food.y)
+        self.handler = Handler(self)
+        self.my_snake = Snake(self.handler)
+        self.food = Food(self.handler)
         self.frame.bind("<KeyPress>", self.print_key_info)
 
     # Set directions for the snake
@@ -123,11 +138,7 @@ class SnakeGame:
 
     def update(self):
         self.my_snake.update()
-
-        if self.my_snake.head == self.food_coor:
-            self.my_snake.grow()
-            self.food.generate_food()
-            self.food_coor = (self.food.x, self.food.y)
+        self.food.update()
 
     def render(self):
         self.my_snake.render(self.canvas)
