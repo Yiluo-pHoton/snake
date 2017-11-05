@@ -9,12 +9,14 @@ class Directions:
     DOWN = (0, 1)
     LEFT = (-1, 0)
     RIGHT = (1, 0)
+    DEFAULT = RIGHT
 
 
 class GameStatus:
     START = 0
     ONGOING = 1
     GAME_OVER = 2
+    DEFAULT = START
 
 
 class Handler:
@@ -25,7 +27,7 @@ class Handler:
         return self.game
 
     def get_snake(self):
-        return self.game.snake
+        return self.game.my_snake
 
     def get_food(self):
         return self.game.food
@@ -41,7 +43,7 @@ class Snake:
     def __init__(self, handler):
         self.body = [(0, 0), (1, 0), (2, 0)]
         self.tail = self.body[0]
-        self.direction = Directions.RIGHT
+        self.direction = Directions.DEFAULT
         self.handler = handler
 
     def step(self):
@@ -64,7 +66,7 @@ class Snake:
 
         self.food = self.handler.get_food()
         self.food_coor = (self.food.x, self.food.y)
-        if self.head == self.food.coor:
+        if self.head == self.food_coor:
             self.grow()
 
     def render(self, canvas):
@@ -85,12 +87,12 @@ class Food:
     def __init__(self, handler):
         self.x = random.randint(0, 40)
         self.y = random.randint(0, 30)
+        self.coor = (self.x, self.y)
         self.handler = handler
 
     def update(self):
         self.snake = self.handler.get_snake()
         self.snake_head = self.snake.head
-        self.coor = (self.x, self.y)
 
         if self.snake.head == self.coor:
             self.generate_food()
@@ -104,6 +106,7 @@ class Food:
     def generate_food(self):
         self.x = random.randint(0, 39)
         self.y = random.randint(0, 29)
+        self.coor = (self.x, self.y)
 
 
 class SnakeGame:
